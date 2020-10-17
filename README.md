@@ -32,7 +32,7 @@
 ### Pages
 
 #### index.html
-![index.html]()
+![index.html](assets/WorkDayScheduler.png)
 
 - - -
 
