@@ -10,6 +10,9 @@ $(document).ready(function () {
 
     var todayComposite = day + "th of " + month + ", " + year;
 
+    // variable for saved content
+    var savedContent = JSON.parse(localStorage.getItem("savedContent")) || [];
+
     // console log to figure out date formatting
     console.log(today);
     console.log(day);
@@ -18,11 +21,12 @@ $(document).ready(function () {
     console.log(hour);
     console.log(todayComposite);
 
-    // add today to the DOM
-    $("#currentDay").append(todayComposite);
-
-
-
+    // initial function adds today to the DOM and calls the addTimeBlocks function
+    function init(){
+        $("#currentDay").append(todayComposite);
+        addTimeBlocks();
+    };
+    
     // add timeblocks to the DOM
     function addTimeBlocks() {
         var timeDiv = $(".container");
@@ -69,7 +73,7 @@ $(document).ready(function () {
 
             var divRow = $("<div>").attr("class", "row").attr("id", item.id);
             var divTimeCol = $("<div>").attr("class", "col-sm-2 hour text-center").text(item.value);
-            var textareaCol = $("<input>").attr("class", "col-sm-8 time-block").attr("id", item.id + "TextArea");
+            var textareaCol = $("<textarea>").attr("class", "col-sm-8 time-block").attr("id", item.id + "TextArea");
             var btnSaveCol = $("<button>").attr("class", "col-sm-2 saveBtn").attr("id",item.id + "SaveBtn").html("<i class=\"far fa-save\"></i>");
 
             divRow.append(divTimeCol);
@@ -77,35 +81,48 @@ $(document).ready(function () {
             divRow.append(btnSaveCol);
 
             if(item.id < hour){
-                textareaCol.attr("class", "col-sm-8 time-block past");
+                divRow.attr("class", "row time-block past");
             } else if (item.id > hour){
-                textareaCol.attr("class", "col-sm-8 time-block future");
+                divRow.attr("class", "row time-block future");
             } else {
-                textareaCol.attr("class", "col-sm-8 time-block present");
+                divRow.attr("class", "row time-block present");
             };
 
             timeDiv.append(divRow);
+            $.each(savedContent,function(index, value){
+                $("#" + value.time + "TextArea").text(value.text);
+            });
         });
     };
 
-
-
-    addTimeBlocks();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    
+    // click event for save buttons - saves user inputs
+    $(document).on("click", ".saveBtn", function (event) {
+        var id = $(this).attr("id");
+        id = id.replace("SaveBtn","");
+        console.log(id);
+        var input = $("#" + id + "TextArea").val();
+        console.log(input);
+        savedContent.push({
+            time: id,
+            text: input
+        })
+        localStorage.setItem("savedContent", JSON.stringify(savedContent));
+    });
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+    // initial function to start the whole process 
+    init();
 });
